@@ -123,7 +123,11 @@ function removeEntityByName(name,scene) {
 function makePalm(leafGeometry, palm_opt,curve){
     // WS 01, have a look at the PalmGenerator.js file. Do you recongnise some of the previous code?
     // WS 02, find a palm that you like online, try to recreate it with the palm generator
+    // WS 04, try to comment out different geometries
     let trunkGeometry = new THREE.BoxGeometry(5,5,5);
+    //let trunkGeometry = new THREE.SphereBufferGeometry(5, 32, 32),
+    //let trunkGeometry = new THREE.IcosahedronBufferGeometry(5, 0),
+    // let trunkGeometry = new THREE.TorusBufferGeometry( 5, 3, 16, 100 ),
     palm = new PalmGenerator(leafGeometry,
                              trunkGeometry,
                              palm_opt, curve);
