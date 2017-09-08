@@ -10,12 +10,23 @@ export default class Gui extends DAT.GUI{
             }
         );
         this.params = {
-            geometry: "sphere",
             material: "standard",
+            length:24,
+            length_stem:1,
+            width_stem:0.7,
+            leaf_width:0.5,
+            leaf_up:1.5,
+            curvature: 0.05,
+            curvature_border: 0.05,
+            leaf_inclination: 0.7,
+            border_curve: 0.002,
+            density:21,
             angle: 137.5,
             spread: 0.4,
             extrude: 0.5,
-            num:3
+            num:3,
+            rotateZ: 2.0,
+            rotateY: 2.0
         };
         this.remember(this.params);
 
@@ -23,12 +34,23 @@ export default class Gui extends DAT.GUI{
         this.add(saveMesh, 'add').name('SAVE');
 
 
-        this.add(this.params, "geometry", ["sphere", "box", "lathe", "icosahedron", "thorus"]).onChange(regenerateMesh);
+        this.add(this.params, "material", ["standard", "wireframe", "phong","lambert"]).onChange(this._updateMaterialFolder(regenerateMesh));
         this.add(this.params, "angle").min(136.0).max(138.0).step(0.1).onChange(regenerateMesh);
         this.add(this.params, "spread").min(0.2).max(10.0).step(0.2).onChange(regenerateMesh);
         this.add(this.params, "extrude").min(0.0).max(5.0).step(0.1).onChange(regenerateMesh);
         this.add(this.params, "num").min(1).max(800).step(1).onChange(regenerateMesh);
-        this.add(this.params, "material", ["standard", "wireframe", "phong","lambert"]).onChange(this._updateMaterialFolder(regenerateMesh));
+        this.add(this.params, "rotateZ").min(0).max(360).step(1).onChange(regenerateMesh);
+        this.add(this.params, "rotateY").min(0).max(360).step(1).onChange(regenerateMesh);
+
+        this.add(this.params, "length").min(0).max(40).step(1).onChange(regenerateMesh);;
+        this.add(this.params, "length_stem").min(0).max(10).step(1).onChange(regenerateMesh);;
+        this.add(this.params, "width_stem").min(0.2).max(2).step(0.1).onChange(regenerateMesh);;
+        this.add(this.params, "leaf_width").min(0.1).max(1.0).step(0.1).onChange(regenerateMesh);;
+        this.add(this.params, "leaf_up").min(0).max(5).step(0.5).onChange(regenerateMesh);;
+        this.add(this.params, "curvature").min(0.001).max(0.10).step(0.001).onChange(regenerateMesh);;
+        this.add(this.params, "curvature_border").min(0.001).max(0.10).step(0.001).onChange(regenerateMesh);;
+        this.add(this.params, "leaf_inclination").min(0.1).max(1.0).step(0.1).onChange(regenerateMesh);;
+        this.add(this.params, "density").min(6).max(26).step(1).onChange(regenerateMesh);;
 
     }
 

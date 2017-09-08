@@ -2,10 +2,10 @@
 import * as THREE from 'three';
 import Gui from './gui.js';
 import Stats from 'stats.js';
-import CollectionGeometries from './geometries.js';
 import CollectionMaterials from './materials.js';
 import {phyllotaxisSimple, phyllotaxisConical} from './phyllotaxis.js';
 import {exportMeshAsObj} from './exporter.js';
+import LeafGeometry from './LeafGeometry';
 
 const debug = true;
 const scene = new THREE.Scene();
@@ -16,7 +16,6 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({antialias:true});
 const controls = new OrbitControls(camera, renderer.domElement);
 const materials = new CollectionMaterials;
-const geometries = new CollectionGeometries;
 const stats = new Stats();
 let exporting = false;
 
@@ -69,20 +68,33 @@ function init() {
 
     addStats(debug);
 
-    populateGroup(geometries[gui.params.geometry],materials[gui.params.material]);
+    populateGroup(materials[gui.params.material]);
     render();
 };
 
-function populateGroup(selected_geometry, selected_material) {
+function populateGroup(selected_material) {
+    let leafGeometry = makeLeaf();
+    let radToDeg = Math.PI/180.0;
     for (var i = 0; i< gui.params.num; i++) {
-        // WS 01 , there are some phyllotaxis functions in the  phyllotaxis.js file! try them out
-        // WS 02, make a meaningfull composition, experiment with other geometries like
-        // https://threejs.org/docs/#api/geometries/IcosahedronGeometry
         let coord = phyllotaxisConical(i, gui.params.angle, gui.params.spread, gui.params.extrude);
-        let object = new THREE.Mesh(selected_geometry, selected_material);
+        let object = new THREE.Mesh(leafGeometry, selected_material);
         object.position.set(coord.x, coord.y, coord.z);
-        object.rotateY( (90 + 40 + i * 100/gui.params.num ) * -Math.PI/180.0 );
+        // WS 01, what if you add rotation while composing?
+        // try uncommenting this line first and changing the parameter rotateZ in the GUI
+        //object.rotateZ( (gui.params.rotateZ + i * 100/gui.params.num ) * -radToDeg );
+        // try uncommenting this line first and changing the parameter rotateY in the GUI
+        //object.rotateY( (gui.params.rotateY + i * 200/gui.params.num ) * -radToDeg );
 
+        /*
+        WS 02
+        what if you scale the leave depending on the current iteration i
+        this ratio make the leaf near the center smaller on the x side
+        let ratio = i/gui.params.num;
+        let scaleRatio = ratio === 0 ? 0.001 : ratio;
+        object.scale.set(5 * scaleRatio ,1 ,1);
+        //WS 03 what if you scale in other sides other than x with another factor other than 5?
+        //object.scale.set(1, 8 * scaleRatio ,1);
+        */
         objects.push(object);
         group.add(object);
     }
@@ -108,12 +120,10 @@ function resetGroup(){
 function render(){
     stats.begin();
     if(!exporting){
-        //populateGroup(geometries[gui.params.geometry],materials[gui.params.material]);
         if (gui.params.rotate_flower) {
             group.rotateZ( 0.0137);
         }
         renderer.render(scene, camera);
-        //resetGroup();
     }
     stats.end();
     requestAnimationFrame(render);
@@ -121,19 +131,17 @@ function render(){
 
 let exportMesh = () => {
     exporting = true;
-    //populateGroup(geometries[gui.params.geometry],materials[gui.params.material]);
     let selected_geometry = mergeObjectsInOneGeometry(objects);
     let mesh = new THREE.Mesh(selected_geometry, materials[gui.params.material]);
     scene.add(mesh);
     exportMeshAsObj(scene);
     scene.remove(mesh);
-    //resetGroup();
     exporting = false;
 }
 
 let regenerateMesh = () => {
     resetGroup();
-    populateGroup(geometries[gui.params.geometry],materials[gui.params.material]);
+    populateGroup(materials[gui.params.material]);
 }
 
 function mergeObjectsInOneGeometry(objects){
@@ -143,9 +151,46 @@ function mergeObjectsInOneGeometry(objects){
         mesh.updateMatrix();
         geometry.merge(mesh.geometry, mesh.matrix);
     }
+    assignUVs(geometry);
     return geometry;
 }
 
+function makeLeaf(material) {
+    let opt = {
+        length: gui.params.length,
+        length_stem: gui.params.length_stem,
+        width_stem: gui.params.width_stem,
+        leaf_width: gui.params.leaf_width,
+        leaf_up: gui.params.leaf_up,
+        density: gui.params.density,
+        curvature: gui.params.curvature,
+        curvature_border: gui.params.curvature_border,
+        leaf_inclination: gui.params.leaf_inclination
+    };
+    let geometry = new LeafGeometry(opt);
+    return geometry;
+}
+
+
+function assignUVs(geometry) {
+    geometry.faceVertexUvs[0] = [];
+    geometry.faces.forEach(function(face) {
+        var components = ['x', 'y', 'z'].sort(function(a, b) {
+            return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
+        });
+
+        var v1 = geometry.vertices[face.a];
+        var v2 = geometry.vertices[face.b];
+        var v3 = geometry.vertices[face.c];
+        geometry.faceVertexUvs[0].push([
+            new THREE.Vector2(v1[components[0]], v1[components[1]]),
+            new THREE.Vector2(v2[components[0]], v2[components[1]]),
+            new THREE.Vector2(v3[components[0]], v3[components[1]])
+        ]);
+    });
+
+    geometry.uvsNeedUpdate = true;
+}
 
 init();
 
