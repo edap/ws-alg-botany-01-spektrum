@@ -168,8 +168,6 @@ function makeLeaf() {
 function getCurve(){
     // WS 03, change the vertices in the curve. The last one is the root of the palm.
     var curve = new THREE.CatmullRomCurve3( [
-	      new THREE.Vector3( -40, 150, 0 ),
-	      new THREE.Vector3( -40, 100, 0 ),
 	      new THREE.Vector3( 0, 60, 0 ),
 	      new THREE.Vector3( 0, 0, 0 ),
     ] );

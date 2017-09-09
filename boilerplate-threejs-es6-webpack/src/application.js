@@ -50,7 +50,7 @@ scene.add( lights[ 2 ] );
 
 
 var axisHelper = new THREE.AxisHelper( 50 );
-//scene.add( axisHelper );
+scene.add( axisHelper );
 
 window.addEventListener('resize', function() {
     var WIDTH = window.innerWidth,

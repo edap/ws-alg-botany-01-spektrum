@@ -4,7 +4,7 @@ import Gui from './gui.js';
 import Stats from 'stats.js';
 import CollectionGeometries from './geometries.js';
 import CollectionMaterials from './materials.js';
-import {phyllotaxisSimple, phyllotaxisConical} from './phyllotaxis.js';
+import {phyllotaxisSimple, phyllotaxisConical, phyllotaxisApple, phyllotaxisWrong} from './phyllotaxis.js';
 import {exportMeshAsObj} from './exporter.js';
 
 const debug = true;
@@ -78,7 +78,8 @@ function populateGroup(selected_geometry, selected_material) {
         // WS 01 , there are some phyllotaxis functions in the  phyllotaxis.js file! try them out
         // WS 02, make a meaningfull composition, experiment with other geometries like
         // https://threejs.org/docs/#api/geometries/IcosahedronGeometry
-        let coord = phyllotaxisConical(i, gui.params.angle, gui.params.spread, gui.params.extrude);
+        //let coord = phyllotaxisConical(i, gui.params.angle, gui.params.spread, gui.params.extrude);
+        let coord =  phyllotaxisWrong(i, gui.params.angle, gui.params.spread, gui.params.num);
         let object = new THREE.Mesh(selected_geometry, selected_material);
         object.position.set(coord.x, coord.y, coord.z);
         object.rotateY( (90 + 40 + i * 100/gui.params.num ) * -Math.PI/180.0 );
@@ -109,7 +110,7 @@ function render(){
     stats.begin();
     if(!exporting){
         //populateGroup(geometries[gui.params.geometry],materials[gui.params.material]);
-        if (gui.params.rotate_flower) {
+        if (true) {
             group.rotateZ( 0.0137);
         }
         renderer.render(scene, camera);

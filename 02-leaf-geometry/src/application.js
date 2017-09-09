@@ -81,20 +81,15 @@ function populateGroup(selected_material) {
         object.position.set(coord.x, coord.y, coord.z);
         // WS 01, what if you add rotation while composing?
         // try uncommenting this line first and changing the parameter rotateZ in the GUI
-        //object.rotateZ( (gui.params.rotateZ + i * 100/gui.params.num ) * -radToDeg );
+        object.rotateZ( (gui.params.rotateZ + i * 100/gui.params.num ) * -radToDeg );
         // try uncommenting this line first and changing the parameter rotateY in the GUI
-        //object.rotateY( (gui.params.rotateY + i * 200/gui.params.num ) * -radToDeg );
+        object.rotateY( (gui.params.rotateY + i * 200/gui.params.num ) * -radToDeg );
 
-        /*
-        WS 02
-        what if you scale the leave depending on the current iteration i
-        this ratio make the leaf near the center smaller on the x side
         let ratio = i/gui.params.num;
         let scaleRatio = ratio === 0 ? 0.001 : ratio;
         object.scale.set(5 * scaleRatio ,1 ,1);
         //WS 03 what if you scale in other sides other than x with another factor other than 5?
-        //object.scale.set(1, 8 * scaleRatio ,1);
-        */
+        object.scale.set(1, 8 * scaleRatio ,1);
         objects.push(object);
         group.add(object);
     }
